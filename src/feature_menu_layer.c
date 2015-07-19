@@ -16,8 +16,8 @@ static GBitmap *s_menu_icons[NUM_MENU_ICONS];
 static GBitmap *s_background_bitmap;
 
 typedef struct {
-  char title[256];
-  char content[256][20];
+  char *title;
+  char *content;
 } article;
 
 article list[2];
@@ -62,28 +62,8 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     case 0:
       // Use the row to specify which item we'll draw
     
-      menu_cell_basic_draw(ctx, cell_layer, list[cell_index->row].title, *list[cell_index->row].content, NULL);
-      /*
-      switch (cell_index->row) {
-        
-        case 0:
-          // This is a basic menu item with a title and subtitle
-          menu_cell_basic_draw(ctx, cell_layer, "Basic Item", "With a subtitle", NULL);
-          break;
-        case 1:
-          // This is a basic menu icon with a cycling icon
-          menu_cell_basic_draw(ctx, cell_layer, "Icon Item", "Select to cycle", s_menu_icons[s_current_icon]);
-          break;
-        case 2: 
-          {
-            // Here we use the graphics context to draw something different
-            // In this case, we show a strip of a watchface's background
-            GSize size = layer_get_frame(cell_layer).size;
-            graphics_draw_bitmap_in_rect(ctx, s_background_bitmap, GRect(0, 0, size.w, size.h));
-          }
-          break;
-          
-      }*/
+      //menu_cell_basic_draw(ctx, cell_layer, list[cell_index->row].title, *list[cell_index->row].content, NULL);
+      menu_cell_basic_draw(ctx, cell_layer, list[cell_index->row].title, list[cell_index->row].content, NULL);
       break;
     case 1:
       switch (cell_index->row) {
@@ -103,25 +83,32 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 	  TextLayer *text_layer = text_layer_create(GRect(0, 0, 144, 154));
     printf("SECOND");
     
-  
-	// Set the text, font, and text alignment
+    
+	  // Set the text, font, and text alignment
+    text_layer_set_text(text_layer, list[cell_index->row].content);
+    text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+    text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
 
-   text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
-
+    printf("THIRD");
     // Add the text layer to the window
     layer_add_child(window_get_root_layer(window), text_layer_get_layer(text_layer));
+  
 
+      
     // Push the window
    window_stack_push(window, true);
-    for(int i=0; i<=5;i++){
+    
+    //psleep(2000);
+    //text_layer_set_text(text_layer, "For Real");
+    /*for(int i=0; i<=5;i++){
       text_layer_set_text(text_layer, list[0].content[i]);
     psleep(200);
-    }}
-  
+    }*/
     
+    
+    }
 
-  }
+}
 
 
 static void main_window_load(Window *window) {
@@ -174,22 +161,22 @@ static void init() {
   });
   window_stack_push(s_main_window, true);
   
-  article one;
-  strcpy(one.title, "Geisel");
-  char contents[256][20] = {"Theodor", "Seuss", "Geisel", "better", "known", "to", "the", "world", "as", "the", "beloved", "Dr", "Seuss", "was"}; 
-  for (unsigned int j = 0; j< ARRAY_LENGTH(contents); j++){
-    strcpy(one.content[j], contents[j]);
-  }
+  printf("Before Article One");
   
-  /*char contents2[256][20] = {"fdsaf","jim","fd","fd","f","sto","sthe","wosrld","ass","tshe","besloved","sDr","Sseuss","wass"};
+  article one;
+  one.title = "Geisel";
+  one.content= "Janis";
+  printf("After Article One");
+  
   article two;
-  strcpy(two.title, "Part Two");
-  for (unsigned int j = 0; j<ARRAY_LENGTH(contents2); j++){
-    strcpy(two.content[j], contents2[j]);
-  }
-  */
+  two.title = "Radical";
+  two.content = "ChiCityMayne";
+  
+  printf("After Part Two");
+  
   list[0] = one;
-  //list[1] = two;
+  list[1] = two;
+  printf("After list assignment");
 }
 
 static void deinit() {
